@@ -7,6 +7,6 @@ export const postCreateValidation = [
       min: 3,
     })
     .isString(),
-  body("tags", "Неверный cформат тегов (укажите массив)").optional().isString(),
+  body("tags", "Неверный формат тегов (укажите массив)").optional().isString(),
   body("imageUrl", "Неверная ссылка на изображение").optional().isString(),
 ];
