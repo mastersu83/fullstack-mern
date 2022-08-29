@@ -4,59 +4,69 @@ import ReactMarkdown from "react-markdown";
 import { CommentsBlock, Index, Post } from "../components";
 import { useParams } from "react-router-dom";
 import axios from "../api/instanceAPI";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchPostComments } from "../api/commentsAPI";
 
 export const FullPost = () => {
-  const { id } = useParams();
+  const dispatch = useDispatch();
 
-  const [data, setData] = React.useState();
+  const { id } = useParams();
+  const { items } = useSelector((state) => state.comments.comments);
+  const { data: userData } = useSelector((state) => state.auth);
+
+  const [fullPost, setFullPost] = React.useState();
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [editingCommentId, setEditingCommentId] = React.useState("");
+  const [commentText, setCommentText] = React.useState("");
+
+  const onEditing = async (commentId, index) => {
+    setIsEditing(!isEditing);
+    setEditingCommentId(commentId);
+    setCommentText(items[index].text);
+  };
 
   React.useEffect(() => {
     axios.get(`/posts/${id}`).then((res) => {
-      setData(res.data);
+      setFullPost(res.data);
     });
+    dispatch(fetchPostComments(id));
   }, []);
 
   return (
     <>
-      {data ? (
+      {fullPost ? (
         <Post
-          _id={data._id}
-          title={data.title}
+          _id={fullPost._id}
+          title={fullPost.title}
           imageUrl={
-            data.imageUrl ? `http://localhost:4444${data.imageUrl}` : ""
+            fullPost.imageUrl ? `http://localhost:4444${fullPost.imageUrl}` : ""
           }
-          user={data.user}
-          createdAt={data.createdAt}
-          viewsCount={data.viewsCount}
-          commentsCount={data.commentsCount}
-          tags={data.tags}
+          user={fullPost.user}
+          createdAt={fullPost.createdAt}
+          viewsCount={fullPost.viewsCount}
+          commentsCount={items.length}
+          tags={fullPost.tags}
           isFullPost
         >
-          <ReactMarkdown children={data.text} />
+          <ReactMarkdown children={fullPost.text} />
         </Post>
       ) : (
         <Post isLoading={true} />
       )}
       <CommentsBlock
-        items={[
-          {
-            user: {
-              fullName: "Вася Пупкин",
-              avatarUrl: "https://mui.com/static/images/avatar/1.jpg",
-            },
-            text: "Это тестовый комментарий 555555",
-          },
-          {
-            user: {
-              fullName: "Иван Иванов",
-              avatarUrl: "https://mui.com/static/images/avatar/2.jpg",
-            },
-            text: "When displaying three lines or more, the avatar is not aligned at the top. You should set the prop to align the avatar at the top",
-          },
-        ]}
+        items={items ? items : []}
         isLoading={false}
+        userId={userData?._id}
+        onEditing={onEditing}
+        isEditing={isEditing}
       >
-        <Index />
+        <Index
+          isEditing={isEditing}
+          commentId={editingCommentId}
+          commentText={commentText}
+          setIsEditing={setIsEditing}
+          setCommentText={setCommentText}
+        />
       </CommentsBlock>
     </>
   );

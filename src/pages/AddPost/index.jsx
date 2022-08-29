@@ -46,8 +46,6 @@ export const AddPost = () => {
     setText(value);
   }, []);
 
-  console.log(tags);
-
   const onSubmit = async () => {
     try {
       const fields = {

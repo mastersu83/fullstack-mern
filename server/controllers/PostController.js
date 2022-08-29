@@ -18,7 +18,7 @@ export const getLastTags = async (req, res) => {
   }
 };
 
-export const getAll = async (req, res) => {
+export const getAllPosts = async (req, res) => {
   try {
     const posts = await PostModel.find().populate("user").exec();
     res.json(posts);
@@ -30,7 +30,7 @@ export const getAll = async (req, res) => {
   }
 };
 
-export const getOne = async (req, res) => {
+export const getOnePost = async (req, res) => {
   try {
     const postId = req.params.id;
     PostModel.findOneAndUpdate(
@@ -65,7 +65,7 @@ export const getOne = async (req, res) => {
     });
   }
 };
-export const remove = async (req, res) => {
+export const removePost = async (req, res) => {
   try {
     const postId = req.params.id;
     PostModel.findOneAndDelete(
@@ -96,7 +96,7 @@ export const remove = async (req, res) => {
     });
   }
 };
-export const update = async (req, res) => {
+export const updatePost = async (req, res) => {
   try {
     const postId = req.params.id;
     PostModel.updateOne(
@@ -135,7 +135,7 @@ export const update = async (req, res) => {
   }
 };
 
-export const create = async (req, res) => {
+export const createPost = async (req, res) => {
   try {
     const doc = new PostModel({
       title: req.body.title,
